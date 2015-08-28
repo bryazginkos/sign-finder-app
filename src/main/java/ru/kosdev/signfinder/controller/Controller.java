@@ -22,7 +22,7 @@ public class Controller {
     private SignDetector signDetector;
 
     @RequestMapping("/signfinder")
-    public Result greeting(@RequestParam(value="url") String url) {
+    public Result hasSign(@RequestParam(value="url") String url) {
         log.info("try to find sign in file: " + url);
         try {
             boolean hasSign = signDetector.detectSign(url);
