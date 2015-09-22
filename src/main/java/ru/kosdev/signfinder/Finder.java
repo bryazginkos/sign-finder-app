@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import ru.kosdev.signfinder.transform.EqualizeHistTransformer;
 import ru.kosdev.signfinder.transform.RotateTransformer;
 import ru.kosdev.signfinder.transform.Transformer;
-import ru.kosdev.signfinder.util.PathUtil;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,7 +23,7 @@ import java.util.List;
 @Component
 public class Finder {
 
-    private static final String CASCADE_FILE = PathUtil.platformPath("src/main/resources/cascade.xml");
+    private static final String CASCADE_FILE = PathUtilKt.platformPath("src/main/resources/cascade.xml");
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 

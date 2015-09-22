@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ru.kosdev.signfinder.util.PathUtil;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -42,7 +41,7 @@ public class SamplesTest {
     public void testSamples() throws SignPlaceNotFoundException {
         List<Integer> notFoundIds = new ArrayList<>();
         for (int i = 1; i <= IMAGES_NUMBER; i++) {
-            String path = PathUtil.platformPath(SAMPLES_DIR + "/" + i + ".jpg");
+            String path = PathUtilKt.platformPath(SAMPLES_DIR + "/" + i + ".jpg");
             boolean hasSign = signDetector.detectSign(Paths.get(path).toAbsolutePath().toString());
             if (!hasSign) {
                 notFoundIds.add(i);
@@ -56,7 +55,7 @@ public class SamplesTest {
     public void testSignNotFoundException() throws SignPlaceNotFoundException {
         expectedException.expect(SignPlaceNotFoundException.class);
 
-        String path = PathUtil.platformPath(SAMPLES_DIR + "/no-place.jpg");
+        String path = PathUtilKt.platformPath(SAMPLES_DIR + "/no-place.jpg");
         signDetector.detectSign(Paths.get(path).toAbsolutePath().toString());
     }
 }
