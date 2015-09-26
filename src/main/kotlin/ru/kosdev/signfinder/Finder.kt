@@ -50,7 +50,7 @@ open public class Finder {
      * @param mat
      * @return
      */
-    public fun findSignPlace(mat : opencv_core.Mat) : FindResult? {
+    public open fun findSignPlace(mat : opencv_core.Mat) : FindResult? {
         var result :FindResult?
 
         result = zeroLevelFind(mat);
