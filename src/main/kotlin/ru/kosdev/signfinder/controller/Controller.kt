@@ -18,7 +18,7 @@ public class Controller {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Autowired
-    private val signDetector: SignDetector? = null
+    private lateinit val signDetector: SignDetector
 
     @RequestMapping("/signfinder")
     public fun hasSign(@RequestParam(value = "url") url: String): Result? {
