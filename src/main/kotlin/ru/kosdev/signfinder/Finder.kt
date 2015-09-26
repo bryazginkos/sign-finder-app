@@ -18,7 +18,7 @@ import java.nio.file.Paths;
 @Component
 open public class Finder {
 
-    private val CASCADE_FILE_NAME =  platformPath("src/main/resources/cascade.xml");
+    private val CASCADE_FILE_NAME =  platformPath("src/main/resources/cascade.xml")
     private val logger = LoggerFactory.getLogger(this.javaClass);
 
     @Autowired
