@@ -42,7 +42,7 @@ public class SamplesTest {
         val notFoundIds = ArrayList<Int>()
         for (i in 1..IMAGES_NUMBER) {
             val path = platformPath("$SAMPLES_DIR/$i.jpg")
-            val hasSign = signDetector!!.detectSign(Paths.get(path).toAbsolutePath().toString())
+            val hasSign = signDetector.detectSign(Paths.get(path).toAbsolutePath().toString())
             if (!hasSign) {
                 notFoundIds.add(i)
             }
