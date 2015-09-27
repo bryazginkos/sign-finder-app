@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.*
-import ru.kosdev.signfinder.transform.RotateTransformer
+import ru.kosdev.signfinder.transform.RotateTransformProvider
 
 /**
  * Created by Константин on 26.09.2015.
@@ -19,18 +19,18 @@ public open class Application {
     private val correctionAngle: Int = 0
 
     @Bean(name = arrayOf("rotatePlusTransformer"))
-    public open fun rotatePlusTransformer(): RotateTransformer {
-        return RotateTransformer(correctionAngle.toDouble())
+    public open fun rotatePlusTransformer(): RotateTransformProvider {
+        return RotateTransformProvider(correctionAngle.toDouble())
     }
 
     @Bean(name = arrayOf("rotateMinusTransformer"))
-    public open fun rotateMinusTransformer(): RotateTransformer {
-        return RotateTransformer((-correctionAngle).toDouble())
+    public open fun rotateMinusTransformer(): RotateTransformProvider {
+        return RotateTransformProvider((-correctionAngle).toDouble())
     }
 
     @Bean(name = arrayOf("upsideDownTransformer"))
-    public open fun upsideDownRotateTransformer(): RotateTransformer {
-        return RotateTransformer(180.0)
+    public open fun upsideDownRotateTransformer(): RotateTransformProvider {
+        return RotateTransformProvider(180.0)
     }
 
     companion object {

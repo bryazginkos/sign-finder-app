@@ -6,9 +6,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import ru.kosdev.signfinder.transform.EqualizeHistTransformer;
-import ru.kosdev.signfinder.transform.RotateTransformer;
-import ru.kosdev.signfinder.transform.Transformer;
+import ru.kosdev.signfinder.transform.EqualizeHistTransformProvider;
+import ru.kosdev.signfinder.transform.RotateTransformProvider;
+import ru.kosdev.signfinder.transform.TransformProvider
 
 import java.nio.file.Paths;
 
@@ -22,19 +22,19 @@ open public class Finder {
     private val logger = LoggerFactory.getLogger(this.javaClass);
 
     @Autowired
-    private lateinit val equalizeHistTransformer : EqualizeHistTransformer
+    private lateinit val equalizeHistTransformer : EqualizeHistTransformProvider
 
     @Autowired
     @Qualifier("rotateMinusTransformer")
-    private lateinit val rotateMinusTransformer : RotateTransformer
+    private lateinit val rotateMinusTransformer : RotateTransformProvider
 
     @Autowired
     @Qualifier("rotatePlusTransformer")
-    private lateinit val rotatePlusTransformer : RotateTransformer
+    private lateinit val rotatePlusTransformer : RotateTransformProvider
 
     @Autowired
     @Qualifier("upsideDownTransformer")
-    private lateinit val upsideDownTransformer : RotateTransformer
+    private lateinit val upsideDownTransformer : RotateTransformProvider
 
     private val classifier : opencv_objdetect.CascadeClassifier
 
@@ -86,16 +86,16 @@ open public class Finder {
     private fun firstLevelFind(mat : opencv_core.Mat) : FindResult? {
         var findResult : FindResult?;
 
-        findResult = find(mat, listOfNotNull(equalizeHistTransformer))
+        findResult = find(mat, listOfTransformations(equalizeHistTransformer))
         if (findResult != null) return findResult
 
-        findResult = find(mat, listOfNotNull(rotateMinusTransformer))
+        findResult = find(mat, listOfTransformations(rotateMinusTransformer))
         if (findResult != null) return findResult
 
-        findResult = find(mat, listOfNotNull(rotatePlusTransformer))
+        findResult = find(mat, listOfTransformations(rotatePlusTransformer))
         if (findResult != null) return findResult
 
-        findResult = find(mat, listOfNotNull(upsideDownTransformer))
+        findResult = find(mat, listOfTransformations(upsideDownTransformer))
         if (findResult != null) return findResult
 
         return null;
@@ -110,19 +110,19 @@ open public class Finder {
     private fun secondLevelFind(mat :opencv_core.Mat) : FindResult? {
         var findResult : FindResult?;
 
-        findResult = find(mat, listOfNotNull(upsideDownTransformer, equalizeHistTransformer))
+        findResult = find(mat, listOfTransformations(upsideDownTransformer, equalizeHistTransformer))
         if (findResult != null) return findResult
 
-        findResult = find(mat, listOfNotNull(upsideDownTransformer, rotateMinusTransformer))
+        findResult = find(mat, listOfTransformations(upsideDownTransformer, rotateMinusTransformer))
         if (findResult != null) return findResult
 
-        findResult = find(mat, listOfNotNull(upsideDownTransformer, rotatePlusTransformer))
+        findResult = find(mat, listOfTransformations(upsideDownTransformer, rotatePlusTransformer))
         if (findResult != null) return findResult
 
-        findResult = find(mat, listOfNotNull(equalizeHistTransformer, rotateMinusTransformer))
+        findResult = find(mat, listOfTransformations(equalizeHistTransformer, rotateMinusTransformer))
         if (findResult != null) return findResult
 
-        findResult = find(mat, listOfNotNull(equalizeHistTransformer, rotatePlusTransformer))
+        findResult = find(mat, listOfTransformations(equalizeHistTransformer, rotatePlusTransformer))
         if (findResult != null) return findResult
 
         return null
@@ -137,10 +137,10 @@ open public class Finder {
     private fun thirdLevelFind(mat : opencv_core.Mat) : FindResult? {
         var findResult : FindResult?;
 
-        findResult = find(mat, listOfNotNull(equalizeHistTransformer, upsideDownTransformer, rotateMinusTransformer))
+        findResult = find(mat, listOfTransformations(equalizeHistTransformer, upsideDownTransformer, rotateMinusTransformer))
         if (findResult != null) return findResult
 
-        findResult = find(mat, listOfNotNull(equalizeHistTransformer, upsideDownTransformer, rotatePlusTransformer))
+        findResult = find(mat, listOfTransformations(equalizeHistTransformer, upsideDownTransformer, rotatePlusTransformer))
         if (findResult != null) return findResult
 
         return null
@@ -152,9 +152,9 @@ open public class Finder {
      * @param functions - преобразования
      * @return
      */
-    private fun find(mat :opencv_core.Mat, functions : kotlin.List<Transformer>) : FindResult? {
+    private fun find(mat :opencv_core.Mat, functions : List<(opencv_core.Mat) -> opencv_core.Mat>) : FindResult? {
         var transformedMat = mat.clone()
-        functions.forEach { it accept(transformedMat) }
+        functions.forEach { transformedMat = it.invoke(transformedMat) }
         var rectVector = opencv_core.RectVector()
         classifier.detectMultiScale(transformedMat, rectVector)
         if (rectVector.size() > 0) {
@@ -194,5 +194,9 @@ open public class Finder {
         var x = big.tl().x();
         var y = big.tl().y();
         return opencv_core.Rect(x+width/4, y+height/4, width/2, height/2);
+    }
+
+    private fun listOfTransformations(vararg providers : TransformProvider) : List<(org.bytedeco.javacpp.opencv_core.Mat) -> opencv_core.Mat> {
+        return providers.map { it.getTransformFunction() }
     }
 }
