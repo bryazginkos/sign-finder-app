@@ -21,18 +21,18 @@ public class Controller {
     private lateinit val signDetector: SignDetector
 
     @RequestMapping("/signfinder")
-    public fun hasSign(@RequestParam(value = "url") url: String): Result? {
+    public fun hasSign(@RequestParam(value = "url") url: String): Result {
         log.info("try to find sign in file: " + url)
         try {
             val hasSign = signDetector.detectSign(url)
-            log.info("file $url. Result = $hasSign")
+            log.info("file $url. Result = ${Result(hasSign)}")
             return Result(hasSign)
         } catch (e: SignPlaceNotFoundException) {
             log.info("Sign place is not found in $url")
-            return null
+            return Result("Sing place is not found")
         } catch (e: Exception) {
             log.error(e.getMessage(), e)
-            return null
+            return Result(e.getMessage().toString())
         }
     }
 }
