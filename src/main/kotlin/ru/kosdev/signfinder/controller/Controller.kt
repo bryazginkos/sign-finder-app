@@ -24,7 +24,7 @@ public class Controller {
     public fun hasSign(@RequestParam(value = "url") url: String): Result? {
         log.info("try to find sign in file: " + url)
         try {
-            val hasSign = signDetector!!.detectSign(url)
+            val hasSign = signDetector.detectSign(url)
             log.info("file $url. Result = $hasSign")
             return Result(hasSign)
         } catch (e: SignPlaceNotFoundException) {
